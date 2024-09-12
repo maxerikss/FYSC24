@@ -1,0 +1,80 @@
+% In this folder you can CTRL + X things that you don't want in your main project right now - but think you might want to use later
+
+"""
+Created on Tue Nov 14 16:12:39 2023
+@author: Fredrik Bergelv
+"""
+
+# program for finding bound state energies
+# import libraries
+import numpy as np
+import matplotlib.pyplot as plt
+
+e0 = 8.8541878128*10**(-12)
+e = 1.602176634*10**(-19)
+me = 9.1093837*10**(-31)
+mp = 1.67262192*10**(-27)
+mn = 1.6749*10**(-27)          
+h = 6.62607015*10**(-34)
+hbar = h/(2*np.pi)
+c= 299792458
+
+#L1
+#L,f = 0.88   * 10 ** (-9), 662.3*10**(-9) 
+
+#L2
+#L,f = 1.61   * 10 ** (-9),693.0 *10**(-9) 
+
+#L3
+#L,f = 2.69   * 10 ** (-9), 726.3*10**(-9) 
+
+#L4
+L,f = 3.66   * 10 ** (-9), 746.7*10**(-9) 
+
+
+e = 1.6 * 10 ** (-19) # electron charge
+V0 = 0.22 * e # potential well height, in Joule
+Esteps = 1000 # number of steps in energy vector
+E = np.linspace(0, V0, Esteps) # energy vector
+m0 = 9.1 * 10 ** (-31) # free electron mass
+me = 0.067 * m0 # effective electron mass
+mh = 0.48 * m0 # effective hole mass
+hbar = 1.05 * 10 ** (-34) # plancks constant
+np.seterr(divide="ignore")
+
+
+# Define left and right hand side of (**)
+RHS = np.sqrt((V0 - E) / E) # right hand side
+LHSe = np.tan(L / 2 * np.sqrt(2 * me / hbar ** 2 * E))
+LHSh = np.tan(L / 2 * np.sqrt(2 * mh / hbar ** 2 * E))
+
+L1=f
+print('Numerically: Ee+Eh=',(h*c/L1-1.52*e)/e)
+ö=(h*c/L1-1.52*e)/e
+
+for k in E/ e:
+    if abs(RHS[int(k * e / (V0 / Esteps))]-LHSh[int(k * e / (V0 / Esteps))])<0.01:
+        b=(k)
+        break
+
+for k in E/ e:
+    if abs(RHS[int(k * e / (V0 / Esteps))]-LHSe[int(k * e / (V0 / Esteps))])<0.01:
+        a=(k)
+    if k  > 0.21 :
+        å=a+b
+        print('With the grapgh: Ee+Eh=',a+b)
+        if abs(ö-å)<0.01:
+            print('HURRAY, the differnece is only', abs(ö-å) )
+        break
+
+plt.plot(E / e, RHS)
+plt.plot(E / e, LHSe, label='LHS electrons')
+plt.plot(E / e, LHSh, label='LHS holes')
+plt.axvline(x=a, color='red', linestyle='dotted', label=f'E₉={round(a,3)}eV')
+plt.axvline(x=b, color='black', linestyle='dotted', label=f'Eₕ={round(b,3)}eV')
+plt.ylim([0, 1.5+3]) # set y-axis range
+plt.xlim([0, 0.22]) # set x-axis range
+plt.xlabel('Energy [eV]')  # x-axis label
+plt.ylabel('Left and right hand side functions')  # y-axis label
+plt.legend()
+plt.show()
